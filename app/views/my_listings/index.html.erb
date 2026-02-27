@@ -20,13 +20,7 @@
         <% @listings.each do |listing| %>
           <tr>
             <td class="px-6 py-4 whitespace-nowrap">
-              <% if listing.images.attached? %>
-                <%= image_tag listing.images.first.variant(resize_to_limit: [80, 80]), class: "w-16 h-16 object-cover rounded" %>
-              <% else %>
-                <div class="w-16 h-16 bg-gray-200 rounded flex items-center justify-center">
-                  <span class="text-gray-400 text-xs">No img</span>
-                </div>
-              <% end %>
+              <%= image_tag listing_image_source(listing), class: "w-16 h-16 object-cover rounded" %>
             </td>
             <td class="px-6 py-4 whitespace-nowrap">
               <div class="text-sm font-medium text-gray-900"><%= listing.title %></div>
@@ -44,7 +38,9 @@
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
               <%= link_to "Edit", edit_listing_path(listing), class: "text-indigo-600 hover:text-indigo-900 mr-3" %>
-              <%= button_to "Delete", listing_path(listing), method: :delete, class: "text-red-600 hover:text-red-900 inline", data: { confirm: "Are you sure?" } %>
+              <%= button_to "Delete", listing_path(listing), method: :delete, 
+                  class: "text-red-600 hover:text-red-900 inline",
+                  data: { confirm_button: true, confirm_message: "Are you sure you want to delete '#{listing.title}'? This action cannot be undone.", confirm_title: "Delete Listing?", method: "delete" } %>
             </td>
           </tr>
         <% end %>
@@ -56,6 +52,50 @@
     <div class="text-center py-12 bg-white rounded-lg shadow">
       <p class="text-gray-500 text-lg mb-4">You haven't created any listings yet.</p>
       <%= link_to "Create your first listing", new_listing_path, class: "text-indigo-600 hover:text-indigo-800 font-semibold" %>
+    </div>
+  <% end %>
+
+  <div class="mt-10 mb-6">
+    <h2 class="text-2xl font-bold text-gray-900">My Rented Items</h2>
+    <p class="text-sm text-gray-500 mt-1">Rentals of your listings by other users</p>
+  </div>
+
+  <div class="bg-white rounded-lg shadow overflow-hidden">
+    <table class="min-w-full divide-y divide-gray-200">
+      <thead class="bg-gray-50">
+        <tr>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Listing Title</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Renter</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Start Date</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">End Date</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Earnings</th>
+        </tr>
+      </thead>
+      <tbody class="bg-white divide-y divide-gray-200">
+        <% @owner_rented_items.each do |rental| %>
+          <tr>
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900"><%= rental.listing.title %></td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><%= rental.listing.category %></td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900"><%= rental.renter.name %></td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><%= rental.start_date %></td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><%= rental.end_date %></td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <span class="px-2 py-1 text-xs font-medium rounded-full <%= status_class(rental.status) %>">
+                <%= rental.status %>
+              </span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-green-700">₹<%= rental.total_price %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+
+  <% if @owner_rented_items.empty? %>
+    <div class="text-center py-8">
+      <p class="text-gray-500">No rented items yet.</p>
     </div>
   <% end %>
 </div>

@@ -18,6 +18,9 @@
           <div class="flex items-center">
             <%= link_to "LibaasLoop", root_path, class: "text-xl font-bold text-indigo-600" %>
             <div class="ml-10 flex space-x-4">
+              <% if user_signed_in? %>
+                <button type="button" onclick="window.history.length > 1 ? history.back() : window.location.assign('<%= root_path %>')" class="text-gray-600 hover:text-gray-900">Back</button>
+              <% end %>
               <%= link_to "Browse", listings_path, class: "text-gray-600 hover:text-gray-900" %>
               <% if user_signed_in? %>
                 <%= link_to "My Listings", my_listings_path, class: "text-gray-600 hover:text-gray-900" %>
@@ -29,7 +32,7 @@
             <% if user_signed_in? %>
               <span class="text-gray-600">Hello, <%= current_user.name %></span>
               <% if current_user.admin? %>
-                <%= link_to "Admin", admin_dashboard_path, class: "text-red-600 hover:text-red-900 font-medium" %>
+                <%= link_to "Admin", admin_dashboard_path, class: "text-red-600 hover:text-red-900 font-medium", data: { turbo: false } %>
               <% end %>
               <%= button_to "Logout", destroy_user_session_path, method: :delete, class: "text-gray-600 hover:text-gray-900" %>
             <% else %>
@@ -56,5 +59,7 @@
     <main class="container mx-auto mt-6 px-4">
       <%= yield %>
     </main>
+
+    <%= render "shared/delete_modal" %>
   </body>
 </html>

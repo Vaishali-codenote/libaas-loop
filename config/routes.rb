@@ -1,13 +1,18 @@
 Rails.application.routes.draw do
   devise_for :users
 
-  # Public routes
-  root "home#index"
-  resources :listings
+  get "/admin/login", to: "admin/sessions#new", as: :new_admin_login
+  post "/admin/login", to: "admin/sessions#create", as: :admin_login
+  delete "/admin/logout", to: "admin/sessions#destroy", as: :admin_logout
 
-  # User routes
+  root "home#index"
+
+  resources :listings do
+    resources :rentals, only: [:create]
+  end
+
   authenticated :user do
-    resources :rentals, only: [:create, :update, :index, :show] do
+    resources :rentals, only: [:update, :index, :show] do
       member do
         post :approve
         post :reject
@@ -19,15 +24,38 @@ Rails.application.routes.draw do
     get "my_rentals", to: "my_rentals#index"
   end
 
-  # Admin namespace
   namespace :admin do
+    root "dashboard#index"
     get "dashboard", to: "dashboard#index"
-    resources :users, only: [:index, :show, :destroy] do
+    get "reports", to: "reports#index"
+
+    resources :users do
+      member do
+        patch :block
+        patch :unblock
+        patch :promote
+      end
+    end
+
+    resources :listings do
+      member do
+        patch :approve
+        patch :reject
+      end
+    end
+
+    resources :rentals do
+      member do
+        patch :cancel
+        patch :force_complete
+        patch :issue_refund
+      end
+    end
+
+    resources :categories do
       member do
         patch :toggle_status
       end
     end
-    resources :listings, only: [:index, :show, :destroy]
-    resources :rentals, only: [:index, :show, :update]
   end
 end

@@ -1,4 +1,5 @@
-<div class="max-w-7xl mx-auto">
+<div class="max-w-7xl mx-auto px-4 py-8">
+  <%= turbo_stream_from "listings" %>
   <div class="flex justify-between items-center mb-6">
     <h1 class="text-3xl font-bold text-gray-900">Browse Listings</h1>
     <% if user_signed_in? %>
@@ -17,14 +18,8 @@
 
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
     <% @listings.each do |listing| %>
-      <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition">
-        <% if listing.images.attached? %>
-          <%= image_tag listing.images.first, class: "w-full h-48 object-cover" %>
-        <% else %>
-          <div class="w-full h-48 bg-gray-200 flex items-center justify-center">
-            <span class="text-gray-400">No image</span>
-          </div>
-        <% end %>
+      <div id="<%= dom_id(listing) %>" class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition">
+        <%= image_tag listing_image_source(listing), class: "w-full h-48 object-cover" %>
         <div class="p-4">
           <h3 class="font-semibold text-lg mb-2"><%= listing.title %></h3>
           <p class="text-gray-600 text-sm mb-2"><%= listing.category %></p>

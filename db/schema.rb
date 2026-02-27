@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2026_02_27_074054) do
+ActiveRecord::Schema[7.0].define(version: 2026_02_28_000600) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -39,6 +39,16 @@ ActiveRecord::Schema[7.0].define(version: 2026_02_27_074054) do
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
+  create_table "categories", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "slug", null: false
+    t.boolean "active", default: true, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_categories_on_name", unique: true
+    t.index ["slug"], name: "index_categories_on_slug", unique: true
+  end
+
   create_table "listings", force: :cascade do |t|
     t.string "title"
     t.text "description"
@@ -48,6 +58,10 @@ ActiveRecord::Schema[7.0].define(version: 2026_02_27_074054) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "status", default: "available"
+    t.string "image_url"
+    t.string "image_name", default: "sample1.jpg", null: false
+    t.string "approval_status", default: "pending", null: false
+    t.index ["approval_status"], name: "index_listings_on_approval_status"
     t.index ["user_id"], name: "index_listings_on_user_id"
   end
 
@@ -60,6 +74,7 @@ ActiveRecord::Schema[7.0].define(version: 2026_02_27_074054) do
     t.integer "owner_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "refund_issued_at"
     t.index ["listing_id"], name: "index_rentals_on_listing_id"
     t.index ["owner_id"], name: "index_rentals_on_owner_id"
     t.index ["renter_id"], name: "index_rentals_on_renter_id"
@@ -73,8 +88,9 @@ ActiveRecord::Schema[7.0].define(version: 2026_02_27_074054) do
     t.datetime "remember_created_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "role", default: "user", null: false
     t.string "name"
+    t.boolean "blocked", default: false, null: false
+    t.integer "role", default: 0, null: false
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
@@ -83,6 +99,6 @@ ActiveRecord::Schema[7.0].define(version: 2026_02_27_074054) do
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "listings", "users"
   add_foreign_key "rentals", "listings"
-  add_foreign_key "rentals", "owners"
-  add_foreign_key "rentals", "renters"
+  add_foreign_key "rentals", "users", column: "owner_id"
+  add_foreign_key "rentals", "users", column: "renter_id"
 end

@@ -1,92 +1,58 @@
-<div class="max-w-7xl mx-auto">
-  <h1 class="text-3xl font-bold text-gray-900 mb-8">Admin Dashboard</h1>
+<% content_for :title, "Dashboard" %>
 
-  <!-- Stats Cards -->
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
+<div class="max-w-7xl mx-auto space-y-8">
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
     <div class="bg-white rounded-lg shadow p-6">
-      <div class="text-sm font-medium text-gray-500 mb-1">Total Users</div>
-      <div class="text-3xl font-bold text-gray-900"><%= @total_users %></div>
+      <p class="text-sm text-gray-500">Total Users</p>
+      <p class="text-3xl font-bold text-gray-900"><%= @total_users %></p>
     </div>
     <div class="bg-white rounded-lg shadow p-6">
-      <div class="text-sm font-medium text-gray-500 mb-1">Total Listings</div>
-      <div class="text-3xl font-bold text-gray-900"><%= @total_listings %></div>
+      <p class="text-sm text-gray-500">Total Listings</p>
+      <p class="text-3xl font-bold text-gray-900"><%= @total_listings %></p>
     </div>
     <div class="bg-white rounded-lg shadow p-6">
-      <div class="text-sm font-medium text-gray-500 mb-1">Total Rentals</div>
-      <div class="text-3xl font-bold text-gray-900"><%= @total_rentals %></div>
+      <p class="text-sm text-gray-500">Total Active Rentals</p>
+      <p class="text-3xl font-bold text-green-700"><%= @total_active_rentals %></p>
     </div>
     <div class="bg-white rounded-lg shadow p-6">
-      <div class="text-sm font-medium text-gray-500 mb-1">Active Rentals</div>
-      <div class="text-3xl font-bold text-green-600"><%= @active_rentals %></div>
+      <p class="text-sm text-gray-500">Pending Listings</p>
+      <p class="text-3xl font-bold text-yellow-700"><%= @pending_listings_count %></p>
     </div>
     <div class="bg-white rounded-lg shadow p-6">
-      <div class="text-sm font-medium text-gray-500 mb-1">Completed</div>
-      <div class="text-3xl font-bold text-blue-600"><%= @completed_rentals %></div>
+      <p class="text-sm text-gray-500">Total Revenue</p>
+      <p class="text-3xl font-bold text-indigo-700">₹<%= @total_revenue.to_i %></p>
     </div>
   </div>
 
-  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-    <!-- Recent Users -->
-    <div class="bg-white rounded-lg shadow">
-      <div class="px-6 py-4 border-b">
-        <h2 class="text-lg font-semibold text-gray-900">Recent Users</h2>
-      </div>
-      <div class="p-6">
-        <ul class="space-y-3">
-          <% @recent_users.each do |user| %>
-            <li class="flex justify-between items-center">
-              <div>
-                <div class="font-medium text-gray-900"><%= user.name %></div>
-                <div class="text-sm text-gray-500"><%= user.email %></div>
-              </div>
-              <%= link_to "View", admin_user_path(user), class: "text-indigo-600 hover:text-indigo-900 text-sm" %>
-            </li>
-          <% end %>
-        </ul>
-        <%= link_to "View All Users", admin_users_path, class: "block mt-4 text-indigo-600 hover:text-indigo-900 text-sm" %>
-      </div>
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div class="bg-white rounded-lg shadow p-6">
+      <h3 class="text-lg font-semibold text-gray-900 mb-4">Recently Registered Users</h3>
+      <ul class="space-y-3">
+        <% @recent_users.each do |user| %>
+          <li class="flex justify-between items-center">
+            <div>
+              <p class="font-medium text-gray-900"><%= user.name %></p>
+              <p class="text-sm text-gray-500"><%= user.email %></p>
+            </div>
+            <%= link_to "View", admin_user_path(user), class: "text-indigo-600 text-sm" %>
+          </li>
+        <% end %>
+      </ul>
     </div>
 
-    <!-- Recent Listings -->
-    <div class="bg-white rounded-lg shadow">
-      <div class="px-6 py-4 border-b">
-        <h2 class="text-lg font-semibold text-gray-900">Recent Listings</h2>
-      </div>
-      <div class="p-6">
-        <ul class="space-y-3">
-          <% @recent_listings.each do |listing| %>
-            <li class="flex justify-between items-center">
-              <div>
-                <div class="font-medium text-gray-900"><%= listing.title %></div>
-                <div class="text-sm text-gray-500">by <%= listing.user.name %></div>
-              </div>
-              <%= link_to "View", admin_listing_path(listing), class: "text-indigo-600 hover:text-indigo-900 text-sm" %>
-            </li>
-          <% end %>
-        </ul>
-        <%= link_to "View All Listings", admin_listings_path, class: "block mt-4 text-indigo-600 hover:text-indigo-900 text-sm" %>
-      </div>
-    </div>
-
-    <!-- Recent Rentals -->
-    <div class="bg-white rounded-lg shadow">
-      <div class="px-6 py-4 border-b">
-        <h2 class="text-lg font-semibold text-gray-900">Recent Rentals</h2>
-      </div>
-      <div class="p-6">
-        <ul class="space-y-3">
-          <% @recent_rentals.each do |rental| %>
-            <li class="flex justify-between items-center">
-              <div>
-                <div class="font-medium text-gray-900"><%= rental.listing.title %></div>
-                <div class="text-sm text-gray-500"><%= rental.renter.name %> → <%= rental.status %></div>
-              </div>
-              <%= link_to "View", admin_rental_path(rental), class: "text-indigo-600 hover:text-indigo-900 text-sm" %>
-            </li>
-          <% end %>
-        </ul>
-        <%= link_to "View All Rentals", admin_rentals_path, class: "block mt-4 text-indigo-600 hover:text-indigo-900 text-sm" %>
-      </div>
+    <div class="bg-white rounded-lg shadow p-6">
+      <h3 class="text-lg font-semibold text-gray-900 mb-4">Recently Created Listings</h3>
+      <ul class="space-y-3">
+        <% @recent_listings.each do |listing| %>
+          <li class="flex justify-between items-center">
+            <div>
+              <p class="font-medium text-gray-900"><%= listing.title %></p>
+              <p class="text-sm text-gray-500"><%= listing.category %> by <%= listing.user.name %></p>
+            </div>
+            <%= link_to "View", admin_listing_path(listing), class: "text-indigo-600 text-sm" %>
+          </li>
+        <% end %>
+      </ul>
     </div>
   </div>
 </div>

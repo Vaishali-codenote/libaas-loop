@@ -1,4 +1,153 @@
-<div>
-  <h1 class="font-bold text-4xl">Rentals#show</h1>
-  <p>Find me in app/views/rentals/show.html.erb</p>
+<div class="max-w-4xl mx-auto px-4 py-8">
+  <div class="mb-6">
+    <%= link_to "← Back to My Rentals", my_rentals_path, class: "text-indigo-600 hover:text-indigo-800 flex items-center" %>
+  </div>
+
+  <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+    <div class="p-8">
+      <div class="flex justify-between items-start mb-6">
+        <div>
+          <h1 class="text-3xl font-bold text-gray-900 mb-2">Rental Details</h1>
+          <p class="text-gray-600">Request #<%= @rental.id %></p>
+        </div>
+        <span class="px-3 py-1 text-sm font-medium rounded-full <%= status_class(@rental.status) %>">
+          <%= @rental.status.capitalize %>
+        </span>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+        <div>
+          <h3 class="text-lg font-semibold text-gray-900 mb-4 border-b pb-2">Item Information</h3>
+          <div class="flex items-center space-x-4 mb-4">
+            <%= image_tag listing_image_source(@rental.listing), class: "w-20 h-20 object-cover rounded" %>
+            <div>
+              <p class="font-medium text-gray-900"><%= @rental.listing.title %></p>
+              <p class="text-sm text-gray-500"><%= @rental.listing.category %></p>
+              <%= link_to "View Listing", listing_path(@rental.listing), class: "text-sm text-indigo-600 hover:text-indigo-800" %>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <h3 class="text-lg font-semibold text-gray-900 mb-4 border-b pb-2">Rental Period</h3>
+          <div class="space-y-3">
+            <div class="flex justify-between">
+              <span class="text-gray-600">Start Date:</span>
+              <span class="font-medium text-gray-900"><%= @rental.start_date.strftime("%B %d, %Y") %></span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-gray-600">End Date:</span>
+              <span class="font-medium text-gray-900"><%= @rental.end_date.strftime("%B %d, %Y") %></span>
+            </div>
+            <div class="flex justify-between pt-2 border-t">
+              <span class="text-gray-600">Duration:</span>
+              <span class="font-medium text-gray-900"><%= (@rental.end_date - @rental.start_date).to_i %> days</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+        <div>
+          <h3 class="text-lg font-semibold text-gray-900 mb-4 border-b pb-2">Parties</h3>
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-gray-600">Owner:</span>
+              <div class="flex items-center">
+                <div class="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center mr-2">
+                  <span class="text-indigo-600 font-medium text-sm"><%= @rental.owner.name.first.upcase %></span>
+                </div>
+                <span class="font-medium text-gray-900"><%= @rental.owner.name %></span>
+              </div>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-gray-600">Renter:</span>
+              <div class="flex items-center">
+                <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mr-2">
+                  <span class="text-green-600 font-medium text-sm"><%= @rental.renter.name.first.upcase %></span>
+                </div>
+                <span class="font-medium text-gray-900"><%= @rental.renter.name %></span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <h3 class="text-lg font-semibold text-gray-900 mb-4 border-b pb-2">Price Details</h3>
+          <div class="space-y-3">
+            <div class="flex justify-between">
+              <span class="text-gray-600">Price per day:</span>
+              <span class="font-medium text-gray-900">₹<%= @rental.listing.price_per_day %></span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-gray-600">Duration:</span>
+              <span class="font-medium text-gray-900"><%= (@rental.end_date - @rental.start_date).to_i %> days</span>
+            </div>
+            <div class="flex justify-between pt-3 border-t mt-2">
+              <span class="text-lg font-semibold text-gray-900">Total:</span>
+              <span class="text-xl font-bold text-indigo-600">₹<%= @rental.total_price %></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <% if @rental.owner == current_user && @rental.pending? %>
+        <div class="mt-8 pt-6 border-t">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">Take Action</h3>
+          <div class="flex space-x-4">
+            <%= button_to "Approve Request", approve_rental_path(@rental), method: :post,
+                class: "flex-1 bg-green-600 text-white px-6 py-3 rounded-md font-semibold hover:bg-green-700 transition text-center",
+                data: { confirm_button: true, confirm_message: "Are you sure you want to approve this rental?", confirm_title: "Approve Rental", method: "post" } %>
+            <%= button_to "Reject Request", reject_rental_path(@rental), method: :post,
+                class: "flex-1 bg-red-600 text-white px-6 py-3 rounded-md font-semibold hover:bg-red-700 transition text-center",
+                data: { confirm_button: true, confirm_message: "Are you sure you want to reject this rental?", confirm_title: "Reject Rental", method: "post" } %>
+          </div>
+        </div>
+      <% elsif @rental.owner == current_user && (@rental.approved? || @rental.active?) %>
+        <div class="mt-8 pt-6 border-t">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">Complete Rental</h3>
+          <%= button_to "Mark as Returned & Complete", mark_returned_rental_path(@rental), method: :post,
+              class: "w-full bg-blue-600 text-white px-6 py-3 rounded-md font-semibold hover:bg-blue-700 transition text-center",
+              data: { confirm_button: true, confirm_message: "Mark this item as returned and complete the rental?", confirm_title: "Complete Rental", method: "post" } %>
+        </div>
+      <% end %>
+
+      <!-- Timeline -->
+      <div class="mt-8 pt-6 border-t">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Rental Timeline</h3>
+        <div class="flex items-center justify-between">
+          <div class="text-center">
+            <div class="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-2">
+              <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+              </svg>
+            </div>
+            <p class="text-sm font-medium text-gray-900">Requested</p>
+            <p class="text-xs text-gray-500"><%= @rental.created_at.strftime("%b %d") %></p>
+          </div>
+          <div class="flex-1 mx-4">
+            <div class="h-1 bg-gray-200 rounded">
+              <div class="h-1 bg-indigo-600 rounded" style="width: <%= case @rental.status
+                when 'pending' then '25%'
+                when 'approved' then '50%'
+                when 'active' then '75%'
+                when 'completed' then '100%'
+                else '0%'
+              end %>"></div>
+            </div>
+          </div>
+          <div class="text-center">
+            <div class="w-10 h-10 <%= @rental.completed? ? 'bg-green-100' : 'bg-gray-100' %> rounded-full flex items-center justify-center mx-auto mb-2">
+              <svg class="w-5 h-5 <%= @rental.completed? ? 'text-green-600' : 'text-gray-400' %>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+            </div>
+            <p class="text-sm font-medium text-gray-900">Completed</p>
+            <p class="text-xs text-gray-500"><%= @rental.completed? ? @rental.updated_at.strftime("%b %d") : 'Pending' %></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

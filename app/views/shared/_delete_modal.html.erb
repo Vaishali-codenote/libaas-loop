@@ -1,0 +1,133 @@
+<!-- Confirmation Modal -->
+<div id="confirm-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden" style="display:none;">
+  <div class="flex items-center justify-center min-h-screen p-4">
+    <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+      <div class="flex items-center mb-4">
+        <div class="flex-shrink-0 flex items-center justify-center w-12 h-12 rounded-full bg-red-100">
+          <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+          </svg>
+        </div>
+        <div class="ml-4">
+          <h3 class="text-lg font-semibold text-gray-900" id="modal-title">Confirm Action</h3>
+        </div>
+      </div>
+
+      <p class="text-gray-600 mb-6" id="confirm-message">Are you sure?</p>
+
+      <div class="flex space-x-3">
+        <button id="cancel-btn" class="flex-1 px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
+          Cancel
+        </button>
+        <button id="confirm-btn" class="flex-1 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">
+          Confirm
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  var modal = document.getElementById('confirm-modal');
+  var cancelBtn = document.getElementById('cancel-btn');
+  var confirmBtn = document.getElementById('confirm-btn');
+  var modalTitle = document.getElementById('modal-title');
+  var confirmMessage = document.getElementById('confirm-message');
+  
+  var targetUrl = null;
+  var targetMethod = 'delete';
+
+  function showModal(message, title, url, method) {
+    confirmMessage.textContent = message;
+    modalTitle.textContent = title;
+    targetUrl = url;
+    targetMethod = method;
+    
+    modal.style.display = 'block';
+    modal.classList.remove('hidden');
+  }
+
+  function hideModal() {
+    modal.style.display = 'none';
+    modal.classList.add('hidden');
+    targetUrl = null;
+  }
+
+  // Handle clicks on confirm buttons
+  document.addEventListener('click', function(e) {
+    var btn = e.target.closest('[data-confirm-button]');
+    if (!btn) return;
+    
+    e.preventDefault();
+    e.stopPropagation();
+    
+    var message = btn.getAttribute('data-confirm-message') || 'Are you sure?';
+    var title = btn.getAttribute('data-confirm-title') || 'Confirm';
+    var form = btn.closest('form');
+    var url = form ? form.action : btn.getAttribute('href') || window.location.href;
+    var method = form ? (form.getAttribute('method') || 'post') : 'delete';
+    
+    // Get method from data attribute if present
+    var dataMethod = btn.getAttribute('data-method');
+    if (dataMethod) method = dataMethod;
+    
+    showModal(message, title, url, method);
+  });
+
+  // Cancel button
+  cancelBtn.addEventListener('click', function() {
+    hideModal();
+  });
+
+  // Confirm button - create and submit form
+  confirmBtn.addEventListener('click', function() {
+    if (!targetUrl) return;
+    
+    confirmBtn.disabled = true;
+    confirmBtn.textContent = 'Processing...';
+    
+    // Create a hidden form and submit
+    var form = document.createElement('form');
+    form.method = 'POST';
+    form.action = targetUrl;
+    form.style.display = 'none';
+    
+    // Add CSRF token
+    var csrfToken = document.querySelector('meta[name="csrf-token"]');
+    if (csrfToken) {
+      var tokenInput = document.createElement('input');
+      tokenInput.type = 'hidden';
+      tokenInput.name = 'authenticity_token';
+      tokenInput.value = csrfToken.getAttribute('content');
+      form.appendChild(tokenInput);
+    }
+    
+    // Add method override for non-POST requests
+    if (targetMethod.toLowerCase() !== 'post') {
+      var methodInput = document.createElement('input');
+      methodInput.type = 'hidden';
+      methodInput.name = '_method';
+      methodInput.value = targetMethod;
+      form.appendChild(methodInput);
+    }
+    
+    document.body.appendChild(form);
+    form.submit();
+  });
+
+  // Close on backdrop click
+  modal.addEventListener('click', function(e) {
+    if (e.target === modal || e.target.parentNode === modal) {
+      hideModal();
+    }
+  });
+
+  // Close on Escape
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && modal.style.display !== 'none') {
+      hideModal();
+    }
+  });
+})();
+</script>

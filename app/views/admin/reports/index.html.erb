@@ -1,0 +1,53 @@
+<% content_for :title, "Reports" %>
+
+<div class="max-w-7xl mx-auto space-y-6">
+  <div class="bg-white rounded-lg shadow p-6">
+    <p class="text-sm text-gray-500">Total Platform Revenue</p>
+    <p class="text-3xl font-bold text-indigo-700">₹<%= @total_platform_revenue.to_i %></p>
+    <p class="text-sm text-gray-600 mt-2">Most rented category: <%= @most_rented_category&.first || 'N/A' %> (<%= @most_rented_category&.last || 0 %> rentals)</p>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div class="bg-white rounded-lg shadow p-6">
+      <h3 class="text-lg font-semibold text-gray-900 mb-4">Top Earning Users</h3>
+      <ul class="space-y-2">
+        <% @top_earning_users.each do |user, earnings| %>
+          <li class="flex justify-between text-sm">
+            <span><%= user.name %></span>
+            <span class="font-semibold">₹<%= earnings.to_i %></span>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+
+    <div class="bg-white rounded-lg shadow p-6">
+      <h3 class="text-lg font-semibold text-gray-900 mb-4">Active Rentals Graph</h3>
+      <% total = @active_rentals_by_status.values.sum.to_f %>
+      <% @active_rentals_by_status.each do |status, count| %>
+        <% width = total.positive? ? ((count / total) * 100).round : 0 %>
+        <div class="mb-3">
+          <div class="flex justify-between text-xs mb-1"><span><%= status %></span><span><%= count %></span></div>
+          <div class="w-full bg-gray-200 rounded h-2">
+            <div class="bg-indigo-600 h-2 rounded" style="width: <%= width %>%"></div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="bg-white rounded-lg shadow p-6">
+    <h3 class="text-lg font-semibold text-gray-900 mb-4">Monthly Revenue Graph</h3>
+    <% max_rev = @monthly_revenue.values.max.to_f %>
+    <div class="space-y-3">
+      <% @monthly_revenue.each do |month, revenue| %>
+        <% width = max_rev.positive? ? ((revenue / max_rev) * 100).round : 0 %>
+        <div>
+          <div class="flex justify-between text-xs mb-1"><span><%= month %></span><span>₹<%= revenue.to_i %></span></div>
+          <div class="w-full bg-gray-200 rounded h-2">
+            <div class="bg-green-600 h-2 rounded" style="width: <%= width %>%"></div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

@@ -1,15 +1,12 @@
-class Admin::DashboardController < ApplicationController
-  before_action :authenticate_user!
-  before_action :authenticate_admin!
-
+class Admin::DashboardController < Admin::BaseController
   def index
     @total_users = User.count
     @total_listings = Listing.count
-    @total_rentals = Rental.count
-    @active_rentals = Rental.where(status: [:active, :approved]).count
-    @completed_rentals = Rental.where(status: :completed).count
-    @recent_users = User.order(created_at: :desc).limit(5)
-    @recent_listings = Listing.order(created_at: :desc).limit(5)
-    @recent_rentals = Rental.order(created_at: :desc).limit(5)
+    @total_active_rentals = Rental.where(status: %w[active approved]).count
+    @pending_listings_count = Listing.pending_approval.count
+    @total_revenue = Rental.where(status: %w[active completed]).includes(:listing).sum { |rental| rental.total_price.to_f }
+
+    @recent_users = User.order(created_at: :desc).limit(8)
+    @recent_listings = Listing.includes(:user).order(created_at: :desc).limit(8)
   end
 end
