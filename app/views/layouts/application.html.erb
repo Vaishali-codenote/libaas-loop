@@ -16,27 +16,29 @@
       <div class="container mx-auto px-4">
         <div class="flex justify-between items-center h-16">
           <div class="flex items-center">
-            <%= link_to "LibaasLoop", root_path, class: "text-xl font-bold text-indigo-600" %>
-            <div class="ml-10 flex space-x-4">
+            <%= link_to "LibaasLoop", root_path, class: "text-xl font-bold text-indigo-600 tracking-tight" %>
+            <div class="ml-8 flex items-center gap-2">
               <% if user_signed_in? %>
-                <button type="button" onclick="window.history.length > 1 ? history.back() : window.location.assign('<%= root_path %>')" class="text-gray-600 hover:text-gray-900">Back</button>
+                <button type="button" onclick="window.history.length > 1 ? history.back() : window.location.assign('<%= root_path %>')" class="px-3 py-1.5 rounded-md text-gray-700 hover:bg-gray-100 transition">Back</button>
               <% end %>
-              <%= link_to "Browse", listings_path, class: "text-gray-600 hover:text-gray-900" %>
+              <% unless user_signed_in? %>
+                <%= link_to "Browse", listings_path, class: "px-3 py-1.5 rounded-md text-gray-700 hover:bg-gray-100 transition" %>
+              <% end %>
               <% if user_signed_in? %>
-                <%= link_to "My Listings", my_listings_path, class: "text-gray-600 hover:text-gray-900" %>
-                <%= link_to "My Rentals", my_rentals_path, class: "text-gray-600 hover:text-gray-900" %>
+                <%= link_to "My Listings", my_listings_path, class: "px-3 py-1.5 rounded-md text-gray-700 hover:bg-gray-100 transition" %>
+                <%= link_to "My Rentals", my_rentals_path, class: "px-3 py-1.5 rounded-md text-gray-700 hover:bg-gray-100 transition" %>
               <% end %>
             </div>
           </div>
           <div class="flex items-center space-x-4">
             <% if user_signed_in? %>
-              <span class="text-gray-600">Hello, <%= current_user.name %></span>
+              <span class="text-gray-600 text-sm">Hello, <%= current_user.name %></span>
               <% if current_user.admin? %>
-                <%= link_to "Admin", admin_dashboard_path, class: "text-red-600 hover:text-red-900 font-medium", data: { turbo: false } %>
+                <%= link_to "Admin", admin_dashboard_path, class: "px-3 py-1.5 rounded-md bg-red-50 text-red-700 hover:bg-red-100 font-medium transition", data: { turbo: false } %>
               <% end %>
-              <%= button_to "Logout", destroy_user_session_path, method: :delete, class: "text-gray-600 hover:text-gray-900" %>
+              <%= button_to "Logout", destroy_user_session_path, method: :delete, class: "px-3 py-1.5 rounded-md text-gray-700 hover:bg-gray-100 transition" %>
             <% else %>
-              <%= link_to "Login", new_user_session_path, class: "text-gray-600 hover:text-gray-900" %>
+              <%= link_to "Login", new_user_session_path, class: "px-3 py-1.5 rounded-md text-gray-700 hover:bg-gray-100 transition" %>
               <%= link_to "Sign Up", new_user_registration_path, class: "bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700" %>
             <% end %>
           </div>

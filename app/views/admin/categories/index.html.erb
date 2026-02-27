@@ -27,7 +27,7 @@
               <%= button_to(category.active? ? "Disable" : "Enable", toggle_status_admin_category_path(category), method: :patch, class: "text-yellow-700 inline") %>
               <%= button_to "Delete", admin_category_path(category), method: :delete, 
                   class: "text-red-600 inline",
-                  data: { confirm_button: true, confirm_message: "Are you sure you want to delete '#{category.name}' category?", confirm_title: "Delete Category?", method: "delete" } %>
+                  data: { confirm_button: true, confirm_message: "Are you sure you want to delete '#{category.name}' category?", confirm_title: "Delete Category?" } %>
             </td>
           </tr>
         <% end %>

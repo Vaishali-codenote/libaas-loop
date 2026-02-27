@@ -1,5 +1,5 @@
 <!-- Confirmation Modal -->
-<div id="confirm-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden" style="display:none;">
+<div id="confirm-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50" style="display: none;">
   <div class="flex items-center justify-center min-h-screen p-4">
     <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
       <div class="flex items-center mb-4">
@@ -35,14 +35,12 @@
   var modalTitle = document.getElementById('modal-title');
   var confirmMessage = document.getElementById('confirm-message');
   
-  var targetUrl = null;
-  var targetMethod = 'delete';
+  var targetForm = null;
 
-  function showModal(message, title, url, method) {
+  function showModal(message, title, form) {
     confirmMessage.textContent = message;
     modalTitle.textContent = title;
-    targetUrl = url;
-    targetMethod = method;
+    targetForm = form;
     
     modal.style.display = 'block';
     modal.classList.remove('hidden');
@@ -51,11 +49,14 @@
   function hideModal() {
     modal.style.display = 'none';
     modal.classList.add('hidden');
-    targetUrl = null;
+    targetForm = null;
+    confirmBtn.disabled = false;
+    confirmBtn.textContent = 'Confirm';
   }
 
-  // Handle clicks on confirm buttons
+  // Handle clicks on confirm buttons - use event delegation on document
   document.addEventListener('click', function(e) {
+    // Find the button or any parent up to the form
     var btn = e.target.closest('[data-confirm-button]');
     if (!btn) return;
     
@@ -64,61 +65,46 @@
     
     var message = btn.getAttribute('data-confirm-message') || 'Are you sure?';
     var title = btn.getAttribute('data-confirm-title') || 'Confirm';
+    
+    // button_to creates a form with the button inside
+    // We need to find that form and intercept its submission
     var form = btn.closest('form');
-    var url = form ? form.action : btn.getAttribute('href') || window.location.href;
-    var method = form ? (form.getAttribute('method') || 'post') : 'delete';
     
-    // Get method from data attribute if present
-    var dataMethod = btn.getAttribute('data-method');
-    if (dataMethod) method = dataMethod;
-    
-    showModal(message, title, url, method);
-  });
+    if (form) {
+      // Remove any existing submit handlers
+      var newForm = form.cloneNode(true);
+      form.parentNode.replaceChild(newForm, form);
+      
+      // Add submit handler to the new form
+      newForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        showModal(message, title, newForm);
+      });
+      
+      // Trigger the submit to show modal
+      newForm.dispatchEvent(new Event('submit'));
+    }
+  }, true); // Use capture phase to intercept before button_to's handler
 
   // Cancel button
   cancelBtn.addEventListener('click', function() {
     hideModal();
   });
 
-  // Confirm button - create and submit form
+  // Confirm button - submit the stored form
   confirmBtn.addEventListener('click', function() {
-    if (!targetUrl) return;
+    if (!targetForm) return;
     
     confirmBtn.disabled = true;
     confirmBtn.textContent = 'Processing...';
     
-    // Create a hidden form and submit
-    var form = document.createElement('form');
-    form.method = 'POST';
-    form.action = targetUrl;
-    form.style.display = 'none';
-    
-    // Add CSRF token
-    var csrfToken = document.querySelector('meta[name="csrf-token"]');
-    if (csrfToken) {
-      var tokenInput = document.createElement('input');
-      tokenInput.type = 'hidden';
-      tokenInput.name = 'authenticity_token';
-      tokenInput.value = csrfToken.getAttribute('content');
-      form.appendChild(tokenInput);
-    }
-    
-    // Add method override for non-POST requests
-    if (targetMethod.toLowerCase() !== 'post') {
-      var methodInput = document.createElement('input');
-      methodInput.type = 'hidden';
-      methodInput.name = '_method';
-      methodInput.value = targetMethod;
-      form.appendChild(methodInput);
-    }
-    
-    document.body.appendChild(form);
-    form.submit();
+    // Submit the form normally
+    targetForm.submit();
   });
 
   // Close on backdrop click
   modal.addEventListener('click', function(e) {
-    if (e.target === modal || e.target.parentNode === modal) {
+    if (e.target === modal) {
       hideModal();
     }
   });

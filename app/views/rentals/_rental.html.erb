@@ -32,15 +32,18 @@
     <% if can_manage %>
       <% if rental.pending? %>
         <%= button_to "Approve", approve_rental_path(rental), method: :post,
+            form: { data: { turbo: false } },
             class: "text-green-600 hover:text-green-900 inline",
-            data: { confirm_button: true, confirm_message: "Approve this rental?", confirm_title: "Approve Rental", method: "post" } %>
+            data: { turbo_confirm: "Approve this rental?" } %>
         <%= button_to "Reject", reject_rental_path(rental), method: :post,
+            form: { data: { turbo: false } },
             class: "text-red-600 hover:text-red-900 inline",
-            data: { confirm_button: true, confirm_message: "Reject this rental?", confirm_title: "Reject Rental", method: "post" } %>
+            data: { turbo_confirm: "Reject this rental?" } %>
       <% elsif rental.approved? || rental.active? %>
         <%= button_to "Return", mark_returned_rental_path(rental), method: :post,
+            form: { data: { turbo: false } },
             class: "text-blue-600 hover:text-blue-900 inline",
-            data: { confirm_button: true, confirm_message: "Mark as returned?", confirm_title: "Complete Rental", method: "post" } %>
+            data: { turbo_confirm: "Mark as returned?" } %>
       <% end %>
     <% end %>
   </td>

@@ -17,7 +17,7 @@
           </tr>
         </thead>
         <tbody id="rentals_as_renter" class="bg-white divide-y divide-gray-200">
-          <%= render partial: "rentals/rental", collection: @rentals_as_renter, as: :rental %>
+          <%= render partial: "rentals/rental", collection: @rentals_as_renter, as: :rental, locals: { viewer: current_user } %>
         </tbody>
       </table>
       <% if @rentals_as_renter.empty? %>
@@ -41,7 +41,7 @@
           </tr>
         </thead>
         <tbody id="rentals_as_owner" class="bg-white divide-y divide-gray-200">
-          <%= render partial: "rentals/rental", collection: @rentals_as_owner, as: :rental %>
+          <%= render partial: "rentals/rental", collection: @rentals_as_owner, as: :rental, locals: { viewer: current_user } %>
         </tbody>
       </table>
       <% if @rentals_as_owner.empty? %>

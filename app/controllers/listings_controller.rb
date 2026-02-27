@@ -36,7 +36,7 @@ class ListingsController < ApplicationController
     attach_uploaded_asset_image(@listing)
 
     if @listing.save
-      redirect_to @listing, notice: "Listing created successfully."
+      redirect_to my_listings_path, notice: "Listing created successfully! Your listing is pending admin approval."
     else
       render :new, status: :unprocessable_entity, alert: @listing.errors.full_messages.join(", ")
     end
@@ -47,7 +47,7 @@ class ListingsController < ApplicationController
     attach_uploaded_asset_image(@listing)
 
     if @listing.update(listing_params)
-      redirect_to @listing, notice: "Listing updated successfully."
+      redirect_to my_listings_path, notice: "Listing updated successfully."
     else
       render :edit, status: :unprocessable_entity
     end

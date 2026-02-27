@@ -98,10 +98,10 @@
           <div class="flex space-x-4">
             <%= button_to "Approve Request", approve_rental_path(@rental), method: :post,
                 class: "flex-1 bg-green-600 text-white px-6 py-3 rounded-md font-semibold hover:bg-green-700 transition text-center",
-                data: { confirm_button: true, confirm_message: "Are you sure you want to approve this rental?", confirm_title: "Approve Rental", method: "post" } %>
+                data: { confirm_button: true, confirm_message: "Are you sure you want to approve this rental?", confirm_title: "Approve Rental" } %>
             <%= button_to "Reject Request", reject_rental_path(@rental), method: :post,
                 class: "flex-1 bg-red-600 text-white px-6 py-3 rounded-md font-semibold hover:bg-red-700 transition text-center",
-                data: { confirm_button: true, confirm_message: "Are you sure you want to reject this rental?", confirm_title: "Reject Rental", method: "post" } %>
+                data: { confirm_button: true, confirm_message: "Are you sure you want to reject this rental?", confirm_title: "Reject Rental" } %>
           </div>
         </div>
       <% elsif @rental.owner == current_user && (@rental.approved? || @rental.active?) %>
@@ -109,7 +109,7 @@
           <h3 class="text-lg font-semibold text-gray-900 mb-4">Complete Rental</h3>
           <%= button_to "Mark as Returned & Complete", mark_returned_rental_path(@rental), method: :post,
               class: "w-full bg-blue-600 text-white px-6 py-3 rounded-md font-semibold hover:bg-blue-700 transition text-center",
-              data: { confirm_button: true, confirm_message: "Mark this item as returned and complete the rental?", confirm_title: "Complete Rental", method: "post" } %>
+              data: { confirm_button: true, confirm_message: "Mark this item as returned and complete the rental?", confirm_title: "Complete Rental" } %>
         </div>
       <% end %>
 

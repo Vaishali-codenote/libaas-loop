@@ -73,12 +73,24 @@ class RentalsController < ApplicationController
 
   def approve
     authorize_owner!
-    if @rental.update(status: :active)
-      @rental.listing.update(status: :rented)
-      redirect_to my_rentals_path, notice: "Rental approved successfully!"
-    else
-      redirect_to my_rentals_path, alert: "Failed to approve rental."
+    overlaps_scope = @rental.listing.rentals
+      .where.not(id: @rental.id)
+      .where("start_date <= ? AND end_date >= ?", @rental.end_date, @rental.start_date)
+
+    if overlaps_scope.where(status: %w[approved active]).exists?
+      redirect_to my_rentals_path, alert: "Another active rental already exists for these dates."
+      return
     end
+
+    Rental.transaction do
+      overlaps_scope.where(status: :pending).update_all(status: "rejected", updated_at: Time.current)
+      @rental.update!(status: :active)
+      @rental.listing.update!(status: :rented)
+    end
+
+    redirect_to my_rentals_path, notice: "Rental approved successfully!"
+  rescue ActiveRecord::RecordInvalid => e
+    redirect_to my_rentals_path, alert: "Failed to approve rental: #{e.record.errors.full_messages.to_sentence}"
   end
 
   def reject
