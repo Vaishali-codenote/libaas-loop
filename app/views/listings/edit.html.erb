@@ -1,0 +1,71 @@
+<div class="max-w-2xl mx-auto">
+  <div class="mb-6">
+    <%= link_to "← Back to Listing", listing_path(@listing), class: "text-indigo-600 hover:text-indigo-800" %>
+  </div>
+
+  <div class="bg-white rounded-lg shadow-lg p-8">
+    <h1 class="text-2xl font-bold text-gray-900 mb-6">Edit Listing</h1>
+
+    <%= form_with model: @listing, local: true, class: "space-y-6" do |form| %>
+      <div>
+        <%= form.label :title, class: "block text-sm font-medium text-gray-700 mb-1" %>
+        <%= form.text_field :title, class: "w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500" %>
+        <% if @listing.errors[:title].any? %>
+          <p class="text-red-500 text-sm mt-1"><%= @listing.errors[:title].join(", ") %></p>
+        <% end %>
+      </div>
+
+      <div>
+        <%= form.label :description, class: "block text-sm font-medium text-gray-700 mb-1" %>
+        <%= form.text_area :description, rows: 4, class: "w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500" %>
+        <% if @listing.errors[:description].any? %>
+          <p class="text-red-500 text-sm mt-1"><%= @listing.errors[:description].join(", ") %></p>
+        <% end %>
+      </div>
+
+      <div>
+        <%= form.label :category, class: "block text-sm font-medium text-gray-700 mb-1" %>
+        <%= form.select :category, ["Lehenga", "Saree", "Anarkali", "Sherwani", "Kurta", "Gown", "Other"], {}, class: "w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500" %>
+        <% if @listing.errors[:category].any? %>
+          <p class="text-red-500 text-sm mt-1"><%= @listing.errors[:category].join(", ") %></p>
+        <% end %>
+      </div>
+
+      <div>
+        <%= form.label :price_per_day, "Price per Day (₹)", class: "block text-sm font-medium text-gray-700 mb-1" %>
+        <%= form.number_field :price_per_day, step: 0.01, class: "w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500" %>
+        <% if @listing.errors[:price_per_day].any? %>
+          <p class="text-red-500 text-sm mt-1"><%= @listing.errors[:price_per_day].join(", ") %></p>
+        <% end %>
+      </div>
+
+      <div>
+        <%= form.label :status, class: "block text-sm font-medium text-gray-700 mb-1" %>
+        <%= form.select :status, [["Available", "available"], ["Rented", "rented"], ["Unavailable", "unavailable"]], {}, class: "w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500" %>
+      </div>
+
+      <div>
+        <%= form.label :images, "Add More Images", class: "block text-sm font-medium text-gray-700 mb-1" %>
+        <%= form.file_field :images, multiple: true, accept: "image/*", class: "w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500" %>
+        
+        <% if @listing.images.attached? %>
+          <div class="mt-4">
+            <p class="text-sm font-medium text-gray-700 mb-2">Current Images:</p>
+            <div class="grid grid-cols-3 gap-2">
+              <% @listing.images.each do |image| %>
+                <div class="relative">
+                  <%= image_tag image.variant(resize_to_limit: [150, 150]), class: "w-full h-32 object-cover rounded-md" %>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+
+      <div class="flex space-x-4">
+        <%= form.submit "Update Listing", class: "flex-1 bg-indigo-600 text-white px-6 py-3 rounded-md font-semibold hover:bg-indigo-700 transition cursor-pointer" %>
+        <%= link_to "Cancel", listing_path(@listing), class: "flex-1 text-center bg-gray-300 text-gray-700 px-6 py-3 rounded-md font-semibold hover:bg-gray-400 transition" %>
+      </div>
+    <% end %>
+  </div>
+</div>

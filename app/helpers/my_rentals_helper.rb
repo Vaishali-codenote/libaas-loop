@@ -1,0 +1,2 @@
+module MyRentalsHelper
+end

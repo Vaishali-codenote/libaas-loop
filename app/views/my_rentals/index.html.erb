@@ -1,0 +1,101 @@
+<div class="max-w-6xl mx-auto">
+  <h1 class="text-3xl font-bold text-gray-900 mb-6">My Rentals</h1>
+
+  <!-- Rentals as Renter -->
+  <div class="mb-8">
+    <h2 class="text-xl font-semibold text-gray-800 mb-4">Rentals I've Requested</h2>
+    <div class="bg-white rounded-lg shadow overflow-hidden">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Listing</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Owner</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Dates</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          <% @rentals_as_renter.each do |rental| %>
+            <tr>
+              <td class="px-6 py-4">
+                <div class="text-sm font-medium text-gray-900"><%= rental.listing.title %></div>
+              </td>
+              <td class="px-6 py-4">
+                <div class="text-sm text-gray-500"><%= rental.owner.name %></div>
+              </td>
+              <td class="px-6 py-4">
+                <div class="text-sm text-gray-500">
+                  <%= rental.start_date %> to <%= rental.end_date %>
+                </div>
+              </td>
+              <td class="px-6 py-4">
+                <span class="px-2 py-1 text-xs font-medium rounded-full <%= status_class(rental.status) %>">
+                  <%= rental.status %>
+                </span>
+              </td>
+              <td class="px-6 py-4 text-sm font-medium">
+                <%= link_to "View Details", rental_path(rental), class: "text-indigo-600 hover:text-indigo-900" %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+      <% if @rentals_as_renter.empty? %>
+        <div class="p-6 text-center text-gray-500">No rental requests yet.</div>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Rentals as Owner -->
+  <div>
+    <h2 class="text-xl font-semibold text-gray-800 mb-4">Rentals for My Listings</h2>
+    <div class="bg-white rounded-lg shadow overflow-hidden">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Listing</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Renter</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Dates</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          <% @rentals_as_owner.each do |rental| %>
+            <tr>
+              <td class="px-6 py-4">
+                <div class="text-sm font-medium text-gray-900"><%= rental.listing.title %></div>
+              </td>
+              <td class="px-6 py-4">
+                <div class="text-sm text-gray-500"><%= rental.renter.name %></div>
+              </td>
+              <td class="px-6 py-4">
+                <div class="text-sm text-gray-500">
+                  <%= rental.start_date %> to <%= rental.end_date %>
+                </div>
+              </td>
+              <td class="px-6 py-4">
+                <span class="px-2 py-1 text-xs font-medium rounded-full <%= status_class(rental.status) %>">
+                  <%= rental.status %>
+                </span>
+              </td>
+              <td class="px-6 py-4 text-sm font-medium space-x-2">
+                <%= link_to "View", rental_path(rental), class: "text-indigo-600 hover:text-indigo-900" %>
+                <% if rental.pending? %>
+                  <%= button_to "Approve", approve_rental_path(rental), method: :post, class: "text-green-600 hover:text-green-900 inline", data: { confirm: "Approve this rental?" } %>
+                  <%= button_to "Reject", reject_rental_path(rental), method: :post, class: "text-red-600 hover:text-red-900 inline", data: { confirm: "Reject this rental?" } %>
+                <% elsif rental.approved? || rental.active? %>
+                  <%= button_to "Mark Returned", mark_returned_rental_path(rental), method: :post, class: "text-blue-600 hover:text-blue-900 inline", data: { confirm: "Mark as returned?" } %>
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+      <% if @rentals_as_owner.empty? %>
+        <div class="p-6 text-center text-gray-500">No rental requests for your listings yet.</div>
+      <% end %>
+    </div>
+  </div>
+</div>
